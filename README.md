@@ -1,6 +1,6 @@
 # Live transcription based on OpenAI's Whisper
 
-**Version 1.0**
+**Version 1.1**
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -21,6 +21,8 @@ You will need the following libraries:
 - faster_whisper
 - denoiser
 - langcodes
+- scipy
+- librosa
 
 ## How to Use
 Create a new instance of the Transcriptor class:
@@ -29,7 +31,7 @@ transcriptor = Transcriptor(microphone_index=0)
 ```
 "microphone_index" is the only required parameter.
 
-Call `transcriptionGenerator = transcriptor.start()` to start the transcription and receive a generator that continuously yields the current sentence spoken by the user. If a sentence is finished, it will yield this sentence, until the user starts speaking again, at which point it will yield the progress of the next sentence.
+Call `transcriptionGenerator = transcriptor.start()` to start the transcription and receive a generator that continuously yields an array of the words and timestamps of the current sentence spoken by the user. If a sentence is finished, it will yield this sentence, until the user starts speaking again, at which point it will yield the progress of the next sentence.
 
 Call `transcriptor.close()` to stop the generator.
 
@@ -39,6 +41,12 @@ Other (optional) parameters:
 - device (string, default="cuda" ("cpu" if "cuda" is not available)): On which device the computations should be run. CUDA is highly recommended.
 - voice_boost (float, default=10): How much the audio preprocessing stage should boost the volume of the user's voice.
 - language (string, default=None): Which language the Whisper model should use. Will be autodetected if None, however, this may lead to a decrease in quality. Must be a valid language code, like "en", "de", "fr".
+- verbose (bool, default=True): Wether debug information should be printed to the console.
+
+Every word contains `text`, `start`, and `end`. "start" and "end" are the timestamps of when the word is spoken relative to the beginning of the sentence. If you don't want to bother with the timestamps and just care about the text, you can call `Transcriptor().word_array_to_string(word_array)` to get a string from the array of words.
+
+Other features:
+- Transcribe the contents of a WAV file. Call `Transcriptor().transcribe_from_file("file\path.wav")`to get a word array.
 
 ## How it Works
 The project is based on [this video](https://www.youtube.com/watch?v=_spinzpEeFM). The audio from the microphone is recorded and chunked into 1 second chunks. These chunks run through a 2 step audio preprocessing stage. In the first stage, the "denoiser" library is used to remove noise from the audio. However, the extracted voice cannot be used like this. Noise may have drowned out some of the speech. This results in audio which is low quality and won't improve the transcription results compared to the audio before the noise removal. This is why the volume of the audio without noise is boosted and it is added back to the original audio. This results in audio which, while still being noisy, has the voice of the speaker significantly increased compared to all other sounds.
