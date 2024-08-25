@@ -295,10 +295,3 @@ class Transcriptor:
         reset = '\033[0m'
         return f"{colors.get(color.lower(), '')}{text}{reset}"
     #endregion
-
-if __name__ == "__main__":
-    transcriptor = Transcriptor(microphone_index=1, language="de")
-    transcriptionGenerator = transcriptor.start()
-
-    for transcription in transcriptionGenerator:
-        print(transcription)
