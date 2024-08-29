@@ -1,5 +1,5 @@
 # Live voice analysis toolkit
-### Your swiss-army knife for voice analysis.
+### Your swiss-army knife for live voice analysis.
 
 **Version 2.0**
 
