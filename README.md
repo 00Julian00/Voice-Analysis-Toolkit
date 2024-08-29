@@ -1,7 +1,7 @@
 # Live voice analysis toolkit
 ### Your swiss-army knife for voice analysis.
 
-**Version 2**
+**Version 2.0**
 
 ## Table of Contents
 - [Introduction](#introduction)
