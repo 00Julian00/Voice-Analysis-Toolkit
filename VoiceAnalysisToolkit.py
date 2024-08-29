@@ -358,9 +358,3 @@ class VoiceProcessingHelpers:
         if audio_data.ndim == 1:
             audio_data = audio_data.unsqueeze(0)
         return audio_data
-
-if __name__ == "__main__":
-    transcriptor = VoiceAnalysis(microphone_index=1, speculative=True, whisper_model="large-v3", device="cuda", voice_boost=10.0, language="de", verbose=True)
-    print("Starting transcription.")
-    for sentence in transcriptor.start():
-        print(VoiceProcessingHelpers.word_array_to_string(sentence))
