@@ -59,7 +59,7 @@ The project contains the `VoiceProcessingHelpers` class, which provide more func
 
 - `word_array_to_string`: Takes a word-array and returns the full text as a single string.
 - `compare_embeddings`: Takes two voice embeddings and compares how 'close' they are to each other. Can be used to check wether two voices are from the same person. Returns a value between -1 and 1 (higher is more similar).
-- `save_to_wav`: Takes a torch.FloatArray and a file path and saves the audio data to a wave file.
+- `save_to_wav`: Takes a torch.FloatTensor and a file path and saves the audio data to a wav file.
 - `load_from_wav`: Takes a file path of a wav file and returns its audio data as a torch.FloatTensor.
 
 This project is licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for details.
