@@ -27,7 +27,7 @@ You will need the following libraries:
 - speechbrain
 
 ## How to Use
-Create a new instance of the Transcriptor class.
+Create a new instance of the VoiceAnalysis class.
 
 Call `transcriptionGenerator = transcriptor.start()` to start the transcription and receive a generator that continuously yields an array of the words, timestamps of the current sentence spoken by the user and voice embeddings contained in the "Word" class. If a sentence is finished, it will yield this sentence, until the user starts speaking again, at which point it will yield the progress of the next sentence.
 
