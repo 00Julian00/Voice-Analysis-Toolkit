@@ -1,3 +1,13 @@
+"""
+Author: Julian Thomas
+Created: 2024-08-29
+Last modified: 2024-10-20
+Licence: Apache 2.0
+
+Description: This script uses fasterwhisper to continously transcribe audio data from the microphone. It also creates voice embeddings.
+Check https://github.com/00Julian00/Voice-Analysis-Toolkit for more information.
+"""
+
 import os
 import queue
 import threading
@@ -212,13 +222,25 @@ class VoiceAnalysis:
     
     def _generate_speaker_embedding(self, audio_data: torch.FloatTensor, start: float, end: float) -> torch.FloatTensor:
         if audio_data.ndim == 1:
-                audio_data = audio_data.unsqueeze(0)
+            audio_data = audio_data.unsqueeze(0)
 
         audio_data = self._split_audio_by_timestamps(audio_data=audio_data, start=start, end=end)
 
-        return self._speaker_embedding_model.encode_batch(audio_data)
+        # Ensure the audio segment is long enough (at least 1 second)
+        min_length = SAMPLE_RATE  # 1 second at 16000 Hz
+        if audio_data.shape[1] < min_length:
+            # Pad the audio data if it's too short
+            padding = torch.zeros(1, min_length - audio_data.shape[1], device=audio_data.device)
+            audio_data = torch.cat([audio_data, padding], dim=1)
+
+        try:
+            return self._speaker_embedding_model.encode_batch(audio_data)
+        except RuntimeError as e:
+            self._log(f"Error generating speaker embedding: {str(e)}")
+            return torch.zeros(1, 512, device=self._device)  # Return a zero embedding as a fallback
+
     
-    def start(self) -> Generator[Word]:
+    def start(self) -> Generator[List[Word], None, None]:
         """
         Generator for live voice analysis.
 
@@ -358,3 +380,9 @@ class VoiceProcessingHelpers:
         if audio_data.ndim == 1:
             audio_data = audio_data.unsqueeze(0)
         return audio_data
+
+if __name__ == "__main__":
+    transcriptor = VoiceAnalysis(microphone_index=3, speculative=True, whisper_model="large-v3", device="cuda", voice_boost=10.0, language="de", verbose=True)
+    print("Starting transcription.")
+    for sentence in transcriptor.start():
+        print(VoiceProcessingHelpers.word_array_to_string(sentence))
